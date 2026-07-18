@@ -23,18 +23,17 @@ python -m venv venv
 ```
 
 2. Aktifkan virtual environment:
+   - Windows:
 
-- Windows:
+   ```bash
+   venv\Scripts\activate
+   ```
 
-```bash
-venv\Scripts\activate
-```
+   - macOS / Linux:
 
-- macOS / Linux:
-
-```bash
-source venv/bin/activate
-```
+   ```bash
+   source venv/bin/activate
+   ```
 
 3. Instal dependensi:
 
