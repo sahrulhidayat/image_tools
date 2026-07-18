@@ -54,5 +54,4 @@ tmp/
 
 # Ignore model/checkpoint files
 *.pth
-*.pt
 *.ckpt
