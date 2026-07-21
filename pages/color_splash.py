@@ -21,7 +21,7 @@ model = load_model()
 
 
 if st.button("← Back to Image Tools"):
-    st.switch_page("main.py")
+    st.switch_page("app.py")
 
 
 st.title("Color Splash Effect")

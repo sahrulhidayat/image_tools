@@ -7,7 +7,7 @@ import io
 st.set_page_config(page_title="Background Remover", page_icon="🖼️", layout="centered")
 
 if st.button("← Back to Image Tools"):
-    st.switch_page("main.py")
+    st.switch_page("app.py")
 
 # Judul
 st.title("Background Remover")

@@ -80,7 +80,7 @@ def pixelate(image, boxes):
 st.set_page_config(page_title="Image Anonymizer", page_icon="🕵️", layout="centered")
 
 if st.button("← Back to Image Tools"):
-    st.switch_page("main.py")
+    st.switch_page("app.py")
 
 st.title("Image Anonymizer")
 
