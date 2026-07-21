@@ -18,41 +18,44 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     image_np = np.array(image)
 
-    # Konversi RGB ke BGR
-    image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+    with st.spinner("⏳ Memproses..."):
+        # Konversi RGB ke BGR
+        image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
 
-    # Grayscale
-    gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+        # Grayscale
+        gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
 
-    # Blur
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+        # Blur
+        blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
-    # Threshold
-    _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        # Threshold
+        _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-    # Morphological operations untuk mengurangi noise
-    kernel = np.ones((3, 3), np.uint8)
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=2)
+        # Morphological operations untuk mengurangi noise
+        kernel = np.ones((3, 3), np.uint8)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=2)
 
-    # Cari contour
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Cari contour
+        contours, _ = cv2.findContours(
+            thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
 
-    # Filter berdasarkan luas area
-    object_count = 0
+        # Filter berdasarkan luas area
+        object_count = 0
 
-    h, w = thresh.shape
-    image_area = h * w
+        h, w = thresh.shape
+        image_area = h * w
 
-    for contour in contours:
-        area = cv2.contourArea(contour)
+        for contour in contours:
+            area = cv2.contourArea(contour)
 
-        if 500 < area < image_area * 0.8:
-            object_count += 1
-            x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(image_bgr, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            if 500 < area < image_area * 0.8:
+                object_count += 1
+                x, y, w, h = cv2.boundingRect(contour)
+                cv2.rectangle(image_bgr, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    # Konversi kembali ke RGB
-    result = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+        # Konversi kembali ke RGB
+        result = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
     col1, col2 = st.columns(2)
 
@@ -67,7 +70,7 @@ if uploaded_file is not None:
     st.download_button(
         "Download Hasil",
         cv2.imencode(".png", cv2.cvtColor(result, cv2.COLOR_RGB2BGR))[1].tobytes(),
-        "hasil.png",
+        "objectcounter-result.png",
         "image/png",
         width="stretch",
     )

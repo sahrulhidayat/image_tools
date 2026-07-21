@@ -41,7 +41,7 @@ if uploaded_file is not None:
     st.download_button(
         label="Download Hasil",
         data=output_bytes,
-        file_name="result.png",
+        file_name="bgremover-result.png",
         mime="image/png",
         width="stretch",
     )

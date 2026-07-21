@@ -95,46 +95,52 @@ method = st.selectbox("Metode", ["Blur", "Pixelate"])
 if uploaded:
     image = Image.open(uploaded)
 
-    img = np.array(image)
+    with st.spinner("⏳ Memproses..."):
+        img = np.array(image)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        boxes = []
 
-    boxes = []
+        if "Face" in target:
+            boxes.extend(detect_face(img))
 
-    if "Face" in target:
-        boxes.extend(detect_face(img))
+        if "License Plate" in target:
+            boxes.extend(detect_plate(img))
 
-    if "License Plate" in target:
-        boxes.extend(detect_plate(img))
+        st.write("Objek terdeteksi :", len(boxes))
 
-    st.write("Objek terdeteksi :", len(boxes))
+        result = None
+        if st.button("Process"):
+            result = img.copy()
 
-    if st.button("Process"):
-        result = img.copy()
+            if method == "Blur":
+                result = blur(result, boxes)
+            else:
+                result = pixelate(result, boxes)
 
-        if method == "Blur":
-            result = blur(result, boxes)
+            result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
 
+        if result is not None:
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.image(image, width="stretch", caption="Gambar Asli")
+            with col2:
+                st.image(result, width="stretch", caption="Hasil Anonimisasi")
         else:
-            result = pixelate(result, boxes)
+            st.info("Tekan tombol Process untuk melihat hasil.")
 
-        result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
+        if result is not None:
+            download_img = cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
+            _, buffer = cv2.imencode(".png", download_img)
 
-        col1, col2 = st.columns(2)
+            st.download_button(
+                "Download Hasil",
+                buffer.tobytes(),
+                "anonymizer-result.png",
+                "image/png",
+                width="stretch",
+            )
 
-        with col1:
-            st.image(image, width="stretch", caption="Gambar Asli")
-
-        with col2:
-            st.image(result, width="stretch", caption="Hasil Anonimisasi")
-
-        download_img = cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
-        _, buffer = cv2.imencode(".png", download_img)
-
-        st.download_button(
-            "Download Hasil",
-            buffer.tobytes(),
-            "hasil.png",
-            "image/png",
-            width="stretch",
-        )
+else:
+    st.info("Upload gambar yang ingin dianonimkan.")
